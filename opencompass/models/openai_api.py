@@ -722,6 +722,14 @@ class OpenAISDK(OpenAI):
                     self.logger.error(
                         f'error occurs at {self.openai_api_base}')
                     self.logger.error(e)
+                    
+                    error_message = str(e)  # 将异常对象转换为字符串
+                    match = re.search(r"'code': '([^']+)'", error_message)  # 进行正则匹配
+
+                    if match:
+                        code = match.group(1)
+                        if code == 'data_inspection_failed':
+                            return 'The input data may contain inappropriate content.'
             except Exception as e:
                 self.logger.error(f'error occurs at {self.openai_api_base}')
                 self.logger.error(e)
