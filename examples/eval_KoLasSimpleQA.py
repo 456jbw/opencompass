@@ -13,9 +13,34 @@ with read_base():
     from opencompass.configs.models.hf_llama.lmdeploy_llama3_1_70b_instruct import models as lmdeploy_llama3_1_70b_instruct_model
 
     from opencompass.configs.models.qwq.lmdeploy_qwq_32b_preview import models as lmdeploy_qwq_32b_preview_model
-    from opencompass.configs.models.deepseek.deepseek_r1_api_aliyun import models as deepseek_r1_api_aliyun_model
     from opencompass.configs.models.deepseek.deepseek_v3_api_aliyun import models as deepseek_v3_api_aliyun_model
+
+    from opencompass.configs.models.deepseek.deepseek_r1_api_aliyun import models as deepseek_r1_api_aliyun_model
+    from opencompass.configs.models.qwq.qwq_32b import models as qwq_32b_model
+    from opencompass.configs.models.qwq.qwq_plus_2025_03_05 import models as qwq_plus_2025_03_05_model
+
+    # from opencompass.configs.models.deepseek.lmdeploy_deepseek_r1_distill_llama_70b_instruct import models as lmdeploy_deepseek_r1_distill_llama_70b_instruct_model
+    # # from opencompass.configs.models.deepseek.lmdeploy_deepseek_r1_distill_llama_8b_instruct import models as lmdeploy_deepseek_r1_distill_llama_8b_instruct_model
+    # from opencompass.configs.models.deepseek.lmdeploy_deepseek_r1_distill_qwen_14b_instruct import models as lmdeploy_deepseek_r1_distill_qwen_14b_instruct_model
+    # from opencompass.configs.models.deepseek.lmdeploy_deepseek_r1_distill_qwen_32b_instruct import models as lmdeploy_deepseek_r1_distill_qwen_32b_instruct_model
+    # from opencompass.configs.models.deepseek.deepseek_r1_distill_llama_8b_api_aliyun import models as deepseek_r1_distill_llama_8b_api_aliyun_model
+    
+
 
 datasets = KolasSimpleQA_datasets
 models = sum([v for k, v in locals().items() if k.endswith('_model')], [])
+
+for model in models:
+    if model['abbr'].startswith('deepseek_r1_api_'):
+        model['return_reasoning_content'] = True
+        model['pred_postprocessor'] = {
+            'KoLasSimpleQA_*': {'type': 'rm_<think>_before_eval'}
+        }
+    if  model['abbr'].startswith('QwQ') and model['abbr'] != 'QwQ-32B-Preview':
+        model['pred_postprocessor'] = {
+            'KoLasSimpleQA_*': {'type': 'rm_<think>_before_eval'}
+        }
+# del model
+
+
 work_dir = './outputs/' + __file__.split('/')[-1].split('.')[0] + '/' # do NOT modify this line, yapf: disable, pylint: disable
